@@ -1,334 +1,342 @@
-# Blog System - Conceitos Básicos de Arquitetura de Software
+# 1. Fundamentos da Arquitetura de Software
 
-Sistema de blog desenvolvido para demonstrar os **fundamentos da arquitetura de software** usando Docker e containers.
+> **📚 [← Voltar ao Índice Principal](https://github.com/ernanegit/00-arquitetura-software-index)** | **[Próximo Tutorial: Padrões Arquiteturais →](https://github.com/ernanegit/02-padroes-arquiteturais)**
 
-## 🎯 Objetivos do Projeto
+Sistema de blog desenvolvido para demonstrar na prática os **fundamentos da arquitetura de software** usando Docker e containers.
 
-Este projeto foi criado para estudar e demonstrar na prática os principais conceitos de arquitetura de software:
+## 🎯 Objetivos de Aprendizado
 
-- ✅ **Separação de Responsabilidades (SoC)**
-- ✅ **Baixo Acoplamento e Alta Coesão**
-- ✅ **Escalabilidade Horizontal e Vertical**
-- ✅ **Manutenibilidade e Observabilidade**
+Ao completar este tutorial, você será capaz de:
 
-## 🏗️ Arquitetura do Sistema
+- ✅ **Aplicar Separação de Responsabilidades** na prática
+- ✅ **Implementar Baixo Acoplamento** entre componentes
+- ✅ **Garantir Alta Coesão** na organização do código
+- ✅ **Configurar Escalabilidade** com containers
+- ✅ **Implementar Observabilidade** com logs e health checks
+
+## 🏗️ O que vamos construir
+
+Um **sistema de blog completo** com arquitetura de containers demonstrando:
+
+- 📱 **Frontend React** com interface responsiva
+- ⚙️ **Backend Node.js** com APIs REST
+- 🗄️ **PostgreSQL** para persistência
+- 💾 **Redis** para cache e performance
+- 🐳 **Docker** para containerização
 
 ```
 ┌─────────────────┐    HTTP/REST    ┌─────────────────┐    SQL    ┌─────────────────┐
-│                 │ ─────────────── │                 │ ───────── │                 │
-│   Frontend      │                 │   Backend       │           │   Database      │
+│   Frontend      │ ─────────────── │   Backend       │ ───────── │   Database      │
 │   (React +      │                 │   (Node.js +    │           │   (PostgreSQL)  │
 │    Nginx)       │                 │    Express)     │           │                 │
-│                 │                 │                 │           │                 │
+│     :3000       │                 │     :8000       │           │     :5432       │
 └─────────────────┘                 └─────────────────┘           └─────────────────┘
-      :3000                               :8000           ┌─────────    :5432
-                                            │             │
-                                            │ Redis       │
-                                            │ Protocol    │
-                                            ▼             │
-                                     ┌─────────────────┐   │
-                                     │                 │   │
-                                     │   Cache         │   │
-                                     │   (Redis)       │   │
-                                     │                 │   │
-                                     └─────────────────┘   │
-                                           :6379           │
-                                                          │
-                                     ┌─────────────────────┘
-                                     │
-                                     ▼
-                              Docker Network
-                            (blog-network)
+                                            │                             
+                                            │ Redis Protocol              
+                                            ▼                             
+                                     ┌─────────────────┐                  
+                                     │   Cache         │                  
+                                     │   (Redis)       │                  
+                                     │     :6379       │                  
+                                     └─────────────────┘                  
 ```
 
-## 🛠️ Tecnologias Utilizadas
+## 📋 Pré-requisitos
 
-### Frontend
-- **React 18** - Interface do usuário
-- **Nginx Alpine** - Servidor web de produção
-- **CSS3** - Estilização responsiva
+### Conhecimentos
+- JavaScript básico
+- Conceitos básicos de HTTP/REST
+- Linha de comando básica
 
-### Backend
-- **Node.js 16** - Runtime JavaScript
-- **Express.js** - Framework web
-- **PostgreSQL Driver** - Conexão com banco
-- **Redis Client** - Cache e sessões
+### Ferramentas
+- [Docker Desktop](https://www.docker.com/products/docker-desktop/) instalado
+- [Git](https://git-scm.com/) 
+- [VS Code](https://code.visualstudio.com/) (recomendado)
 
-### Database & Cache
-- **PostgreSQL 13** - Banco de dados relacional
-- **Redis 6** - Cache em memória
+## 🛠️ Stack Tecnológica
 
-### DevOps
-- **Docker & Docker Compose** - Containerização
-- **Multi-stage builds** - Otimização de imagens
-
-## 📁 Estrutura do Projeto
-
-```
-blog-system/
-├── docker-compose.yml          # Orquestração dos containers
-├── .env                        # Variáveis de ambiente
-├── README.md                   # Este arquivo
-│
-├── frontend/                   # 🎨 Interface do usuário
-│   ├── Dockerfile             # Build React + Nginx
-│   ├── nginx.conf             # Configuração do servidor
-│   ├── package.json           # Dependências React
-│   ├── public/
-│   │   ├── index.html         # HTML principal
-│   │   └── manifest.json      # PWA manifest
-│   └── src/
-│       ├── App.js             # Componente principal
-│       ├── App.css            # Estilos da aplicação
-│       ├── index.js           # Entry point React
-│       └── index.css          # Estilos globais
-│
-├── backend/                    # ⚙️ APIs e lógica de negócio
-│   ├── Dockerfile             # Build Node.js
-│   ├── package.json           # Dependências Node
-│   ├── server.js              # Servidor principal
-│   ├── config/
-│   │   ├── database.js        # Configuração PostgreSQL
-│   │   └── redis.js           # Configuração Redis
-│   └── routes/
-│       └── posts.js           # Rotas dos posts
-│
-├── database/                   # 🗄️ Scripts de banco
-│   └── init.sql               # Schema e dados iniciais
-│
-└── scripts/                    # 🚀 Automação
-    ├── start.bat              # Iniciar sistema (Windows)
-    ├── stop.bat               # Parar sistema (Windows)
-    └── reset.bat              # Reset completo (Windows)
-```
+| Componente | Tecnologia | Versão | Responsabilidade |
+|------------|------------|---------|------------------|
+| **Frontend** | React + Nginx | 18 + Alpine | Interface do usuário |
+| **Backend** | Node.js + Express | 16 | APIs e lógica de negócio |
+| **Database** | PostgreSQL | 13 | Persistência de dados |
+| **Cache** | Redis | 6 | Cache e performance |
+| **Containers** | Docker + Compose | Latest | Orquestração |
 
 ## 🚀 Como Executar
 
-### Pré-requisitos
-- [Docker Desktop](https://www.docker.com/products/docker-desktop/) instalado
-- [Git](https://git-scm.com/) para clonar o repositório
+### Instalação Rápida
 
-### Passo a Passo
-
-1. **Clone o repositório:**
 ```bash
-git clone https://github.com/ernanegit/eng_soft_conceitos_basicos.git
-cd eng_soft_conceitos_basicos
-```
+# 1. Clone o repositório
+git clone https://github.com/ernanegit/01-fundamentos-arquitetura-software.git
+cd 01-fundamentos-arquitetura-software
 
-2. **Inicie o sistema:**
-```bash
+# 2. Inicie o sistema
 # Windows
 scripts\start.bat
 
 # Linux/Mac
-chmod +x scripts/start.sh
-./scripts/start.sh
+chmod +x scripts/start.sh && ./scripts/start.sh
 
 # Manual
 docker-compose up --build
 ```
 
-3. **Acesse as aplicações:**
-- **Frontend:** http://localhost:3000
-- **Backend API:** http://localhost:8000
-- **Health Check:** http://localhost:8000/health
-- **Listar Posts:** http://localhost:8000/api/posts
+### Acessar Aplicações
 
-## 🧪 Testando o Sistema
+- **🌐 Frontend:** http://localhost:3000
+- **⚙️ Backend API:** http://localhost:8000
+- **💓 Health Check:** http://localhost:8000/health
+- **📊 API Posts:** http://localhost:8000/api/posts
 
-### Via Interface Web
-1. Abra http://localhost:3000
-2. Preencha o formulário "Criar Novo Post"
-3. Observe a lista sendo atualizada automaticamente
-4. Teste deletar posts existentes
+## 📚 Conteúdo do Tutorial
 
-### Via API (curl)
-```bash
-# Health check
-curl http://localhost:8000/health
+### Parte 1: 🎯 Conceitos Fundamentais
+- **Separação de Responsabilidades (SoC)**
+- **Baixo Acoplamento e Alta Coesão**
+- **Escalabilidade e Manutenibilidade**
 
-# Listar posts
-curl http://localhost:8000/api/posts
+### Parte 2: 🏗️ Implementação Prática
+- **Estrutura de containers Docker**
+- **Configuração de redes e volumes**
+- **APIs REST com Node.js**
+- **Interface React responsiva**
 
-# Criar post
-curl -X POST http://localhost:8000/api/posts \
-  -H "Content-Type: application/json" \
-  -d '{
-    "title": "Meu Primeiro Post",
-    "content": "Este é o conteúdo do meu post",
-    "author": "João Silva"
-  }'
+### Parte 3: 🧪 Testes e Validação
+- **Health checks e observabilidade**
+- **Testes de escalabilidade**
+- **Debugging de containers**
 
-# Estatísticas
-curl http://localhost:8000/api/stats
+### Parte 4: 📊 Observabilidade
+- **Logs estruturados**
+- **Métricas de performance**
+- **Monitoramento de saúde**
+
+## 📁 Estrutura Detalhada do Projeto
+
 ```
+01-fundamentos-arquitetura-software/
+├── 📄 docker-compose.yml          # Orquestração dos containers
+├── 📄 .env                        # Variáveis de ambiente
+├── 📄 README.md                   # Este arquivo
+│
+├── 📁 frontend/                   # 🎨 Interface do usuário
+│   ├── 🐳 Dockerfile             # Build React + Nginx
+│   ├── ⚙️ nginx.conf             # Configuração do servidor
+│   ├── 📦 package.json           # Dependências React
+│   ├── 📁 public/
+│   │   ├── 📄 index.html         # HTML principal
+│   │   └── 📄 manifest.json      # PWA manifest
+│   └── 📁 src/
+│       ├── ⚛️ App.js             # Componente principal
+│       ├── 🎨 App.css            # Estilos da aplicação
+│       ├── 🚀 index.js           # Entry point React
+│       └── 🎨 index.css          # Estilos globais
+│
+├── 📁 backend/                    # ⚙️ APIs e lógica de negócio
+│   ├── 🐳 Dockerfile             # Build Node.js
+│   ├── 📦 package.json           # Dependências Node
+│   ├── 🚀 server.js              # Servidor principal
+│   ├── 📁 config/
+│   │   ├── 🗄️ database.js        # Configuração PostgreSQL
+│   │   └── 💾 redis.js           # Configuração Redis
+│   └── 📁 routes/
+│       └── 📝 posts.js           # Rotas dos posts
+│
+├── 📁 database/                   # 🗄️ Scripts de banco
+│   └── 📄 init.sql               # Schema e dados iniciais
+│
+└── 📁 scripts/                    # 🚀 Automação
+    ├── ▶️ start.bat              # Iniciar sistema (Windows)
+    ├── ⏹️ stop.bat               # Parar sistema (Windows)
+    └── 🔄 reset.bat              # Reset completo (Windows)
+```
+
+## 🧪 Exercícios Práticos
+
+### Exercício 1: Testar Separação de Responsabilidades
+```bash
+# Parar apenas o frontend
+docker-compose stop frontend
+# Verificar se backend ainda funciona
+curl http://localhost:8000/health
+```
+
+### Exercício 2: Testar Baixo Acoplamento
+```bash
+# Substituir PostgreSQL por dados em memória
+# Verificar se frontend continua funcionando
+```
+
+### Exercício 3: Testar Escalabilidade
+```bash
+# Escalar backend
+docker-compose up --scale backend=3
+# Observar distribuição de carga
+```
+
+## 🎯 Checkpoint: O que você aprendeu
+
+Após completar este tutorial, marque os itens que você domina:
+
+- [ ] **Separação de Responsabilidades**: Cada container tem função específica
+- [ ] **Baixo Acoplamento**: Serviços se comunicam via APIs bem definidas
+- [ ] **Alta Coesão**: Código organizado por responsabilidade
+- [ ] **Escalabilidade**: Capacidade de escalar componentes independentemente
+- [ ] **Observabilidade**: Logs, health checks e monitoramento
+- [ ] **Containerização**: Docker e Docker Compose na prática
+- [ ] **APIs REST**: Endpoints bem estruturados
+- [ ] **Cache Strategy**: Redis para performance
 
 ## 🏛️ Conceitos Arquiteturais Demonstrados
 
 ### 1. 🎯 Separação de Responsabilidades (SoC)
 
-**Cada container tem uma responsabilidade única:**
+**Implementação:**
+- **Frontend**: Apenas UI/UX
+- **Backend**: Apenas APIs e lógica
+- **Database**: Apenas persistência
+- **Cache**: Apenas performance
 
-- **Frontend (React + Nginx)**: Apenas interface do usuário
-- **Backend (Node.js)**: Apenas APIs e lógica de negócio  
-- **Database (PostgreSQL)**: Apenas persistência de dados
-- **Cache (Redis)**: Apenas cache e performance
-
-**Benefícios:**
-- Facilita manutenção e debugging
-- Permite desenvolvimento independente
-- Reduz complexidade de cada componente
+**Benefícios observados:**
+- Facilita debugging
+- Permite desenvolvimento paralelo
+- Reduz complexidade
 
 ### 2. 🔗 Baixo Acoplamento
 
-**Como é implementado:**
-- Comunicação via HTTP/REST APIs bem definidas
-- Configuração via variáveis de ambiente
-- Cada serviço pode ser substituído independentemente
+**Como implementamos:**
+- HTTP/REST para comunicação
+- Variáveis de ambiente para configuração
+- Containers independentes
 
-**Exemplo prático:**
+**Teste prático:**
 ```bash
-# Você pode trocar o PostgreSQL por MySQL sem afetar o frontend
-# Ou trocar o React por Vue.js sem afetar o backend
+# Trocar PostgreSQL por outro banco sem afetar frontend
+# Substituir React por Vue sem afetar backend
 ```
 
 ### 3. 🧩 Alta Coesão
 
-**Estrutura organizada:**
-- Rotas relacionadas ficam no mesmo arquivo
+**Estrutura implementada:**
+- Routes agrupadas por funcionalidade
 - Configurações agrupadas por serviço
-- Funcionalidades similares próximas
-
-**Exemplo:**
-- Todas as operações de posts em `/backend/routes/posts.js`
-- Todas as configurações de DB em `/backend/config/database.js`
+- Responsabilidades bem definidas
 
 ### 4. 📈 Escalabilidade
 
-**Escalabilidade Horizontal:**
-```bash
-# Escalar apenas o backend
-docker-compose up --scale backend=3
-
-# Escalar frontend e backend
-docker-compose up --scale frontend=2 --scale backend=3
-```
-
-**Escalabilidade Vertical:**
-- Aumentar recursos (CPU/RAM) de containers específicos
-- Cache Redis para reduzir carga no banco
+**Horizontal:** `docker-compose up --scale backend=3`
+**Vertical:** Ajustar recursos de CPU/RAM
+**Cache:** Redis para reduzir carga no DB
 
 ### 5. 🔧 Manutenibilidade
 
-**Práticas implementadas:**
-- Logs estruturados para debugging
-- Health checks para monitoramento
-- Graceful shutdown para deploys seguros
-- Código bem documentado e organizado
+**Práticas aplicadas:**
+- Logs estruturados
+- Health checks
+- Graceful shutdown
+- Documentação completa
 
 ## 📊 Endpoints da API
 
-| Método | Endpoint | Descrição |
-|--------|----------|-----------|
-| `GET` | `/health` | Status do sistema |
-| `GET` | `/api/posts` | Listar todos os posts |
-| `POST` | `/api/posts` | Criar novo post |
-| `DELETE` | `/api/posts/:id` | Deletar post por ID |
-| `GET` | `/api/stats` | Estatísticas do sistema |
+| Método | Endpoint | Descrição | Exemplo |
+|--------|----------|-----------|---------|
+| `GET` | `/health` | Status do sistema | `curl localhost:8000/health` |
+| `GET` | `/api/posts` | Listar posts | `curl localhost:8000/api/posts` |
+| `POST` | `/api/posts` | Criar post | Ver exemplo abaixo |
+| `DELETE` | `/api/posts/:id` | Deletar post | `curl -X DELETE localhost:8000/api/posts/1` |
+| `GET` | `/api/stats` | Estatísticas | `curl localhost:8000/api/stats` |
+
+### Exemplo de Criação de Post
+```bash
+curl -X POST http://localhost:8000/api/posts \
+  -H "Content-Type: application/json" \
+  -d '{
+    "title": "Meu Primeiro Post",
+    "content": "Aprendendo arquitetura de software na prática!",
+    "author": "Desenvolvedor"
+  }'
+```
 
 ## 🐳 Comandos Docker Úteis
 
 ```bash
-# Ver status dos containers
-docker-compose ps
+# Monitoramento
+docker-compose ps                    # Status dos containers
+docker-compose logs -f              # Logs em tempo real
+docker-compose logs backend         # Logs específicos
+docker stats                        # Uso de recursos
 
-# Ver logs de todos os serviços
-docker-compose logs -f
+# Manutenção
+docker-compose down                  # Parar tudo
+docker-compose down -v              # Parar + remover volumes
+docker-compose build --no-cache     # Rebuild sem cache
+docker system prune -f              # Limpeza geral
 
-# Ver logs de um serviço específico
-docker-compose logs -f backend
-
-# Parar todos os serviços
-docker-compose down
-
-# Rebuild sem cache
-docker-compose build --no-cache
-
-# Reset completo (remove volumes)
-docker-compose down -v
-
-# Entrar em um container
-docker-compose exec backend sh
+# Debugging
+docker-compose exec backend sh      # Entrar no container
 docker-compose exec database psql -U user -d blogdb
 ```
 
 ## 🔍 Troubleshooting
 
-### Problemas Comuns
+| Problema | Solução |
+|----------|---------|
+| **Port already in use** | `docker-compose down` |
+| **Cannot connect to database** | `docker-compose down -v && docker-compose up` |
+| **Frontend não carrega** | `docker-compose build --no-cache frontend` |
+| **Redis connection failed** | `docker-compose restart redis backend` |
+| **Permission denied (scripts)** | `chmod +x scripts/*.sh` (Linux/Mac) |
 
-**"Port already in use":**
-```bash
-docker-compose down
-# Verificar processos usando as portas
-netstat -ano | findstr :3000
-netstat -ano | findstr :8000
-```
+## 🚀 Próximos Passos
 
-**"Cannot connect to database":**
-```bash
-# Ver logs do database
-docker-compose logs database
-# Recriar volumes
-docker-compose down -v && docker-compose up --build
-```
+### Melhorias Sugeridas para Praticar
+1. **Adicionar autenticação JWT**
+2. **Implementar testes automatizados**
+3. **Adicionar paginação nos posts**
+4. **Criar sistema de comentários**
+5. **Implementar upload de imagens**
 
-**Frontend não carrega:**
-```bash
-# Verificar logs
-docker-compose logs frontend
-# Rebuild do frontend
-docker-compose build --no-cache frontend
-```
+### Continuar Aprendizado
+**➡️ [Próximo Tutorial: Padrões Arquiteturais](https://github.com/ernanegit/02-padroes-arquiteturais)**
 
-## 🎓 Próximos Passos no Aprendizado
+Onde você aprenderá:
+- Arquitetura em Camadas
+- MVC Pattern
+- Repository Pattern
+- Clean Architecture
 
-### Melhorias Sugeridas
-1. **Autenticação JWT** - Adicionar login e proteção de rotas
-2. **Testes Automatizados** - Unit tests e integration tests
-3. **Monitoramento** - Prometheus + Grafana
-4. **CI/CD Pipeline** - GitHub Actions para deploy
-5. **Load Balancer** - Nginx como proxy reverso
-6. **Microserviços** - Quebrar em serviços menores
-7. **Event-Driven** - Implementar padrão pub/sub
+## 📚 Referências e Links Úteis
 
-### Exercícios Práticos
-1. Adicione um campo "categoria" aos posts
-2. Implemente paginação na listagem
-3. Crie endpoint de busca por texto
-4. Adicione validação mais robusta
-5. Implemente soft delete
+- [Docker Documentation](https://docs.docker.com/)
+- [Node.js Best Practices](https://github.com/goldbergyoni/nodebestpractices)
+- [React Documentation](https://react.dev/)
+- [PostgreSQL Documentation](https://www.postgresql.org/docs/)
+- [Redis Documentation](https://redis.io/documentation)
 
-## 📚 Conceitos de Arquitetura Estudados
+## 🤝 Contribuições
 
-- [x] **Fundamentos da Arquitetura de Software**
-- [ ] Padrões Arquiteturais (MVC, Layered, Microservices)
-- [ ] Comunicação entre Serviços (REST, GraphQL, gRPC)
-- [ ] Event-Driven Architecture
-- [ ] CQRS e Event Sourcing
-- [ ] Circuit Breaker Pattern
-- [ ] API Gateway Pattern
-- [ ] Database per Service
-- [ ] Saga Pattern
+Encontrou algum problema ou tem sugestões? 
+
+1. Fork este repositório
+2. Crie uma branch para sua correção
+3. Faça commit das mudanças
+4. Abra um Pull Request
 
 ## 👨‍💻 Autor
 
-**Seu Nome** - Estudante de Arquitetura de Software
+**Erne** - Estudante de Arquitetura de Software
+- GitHub: [@ernanegit](https://github.com/ernanegit)
 
 ## 📄 Licença
 
-Este projeto é usado para fins educacionais e de aprendizado.
+Este projeto é para fins educacionais e de aprendizado.
 
 ---
 
-**🎯 Objetivo alcançado:** Sistema funcional demonstrando conceitos fundamentais de arquitetura de software com Docker!
+> **💡 Dica:** Mantenha este tutorial como referência! Os conceitos aqui são fundamentais para todos os próximos tutoriais.
+
+---
+
+**📚 [← Voltar ao Índice Principal](https://github.com/ernanegit/00-arquitetura-software-index)** | **[Próximo Tutorial: Padrões Arquiteturais →](https://github.com/ernanegit/02-padroes-arquiteturais)**
