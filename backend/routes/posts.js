@@ -22,8 +22,8 @@ router.get('/', async (req, res) => {
 
     const posts = result.rows;
 
-    // Cache por 5 minutos
-    await redis.setex('posts', 300, JSON.stringify(posts));
+    // Cache por 5 minutos (nova sintaxe Redis v4+)
+    await redis.setEx('posts', 300, JSON.stringify(posts));
 
     res.json(posts);
   } catch (error) {
@@ -78,8 +78,9 @@ router.post('/', async (req, res) => {
       [title, content, author]
     );
 
-    // Invalidar cache
+    // Invalidar cache (nova sintaxe)
     await redis.del('posts');
+    await redis.del('stats');
 
     res.status(201).json(result.rows[0]);
   } catch (error) {
@@ -114,6 +115,7 @@ router.put('/:id', async (req, res) => {
 
     // Invalidar cache
     await redis.del('posts');
+    await redis.del('stats');
 
     res.json(result.rows[0]);
   } catch (error) {
@@ -138,6 +140,7 @@ router.delete('/:id', async (req, res) => {
 
     // Invalidar cache
     await redis.del('posts');
+    await redis.del('stats');
 
     res.json({ message: 'Post deletado com sucesso' });
   } catch (error) {

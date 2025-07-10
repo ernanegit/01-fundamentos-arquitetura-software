@@ -76,8 +76,8 @@ app.get('/api/stats', async (req, res) => {
       lastUpdated: new Date().toISOString()
     };
 
-    // Cache por 2 minutos
-    await redis.setex(cacheKey, 120, JSON.stringify(stats));
+    // Cache por 2 minutos (nova sintaxe Redis v4+)
+    await redis.setEx(cacheKey, 120, JSON.stringify(stats));
 
     res.json(stats);
   } catch (error) {
