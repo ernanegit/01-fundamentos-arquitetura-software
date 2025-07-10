@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="utf-8" />
+    <link rel="icon" href="%PUBLIC_URL%/favicon.ico" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#667eea" />
+    <meta name="description" content="Sistema de blog para demonstrar arquitetura de software" />
+    
+    <title>Blog System - Arquitetura de Software</title>
+    
+    <!-- Preconnect para melhor performance -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    
+    <!-- Meta tags para SEO -->
+    <meta property="og:title" content="Blog System - Arquitetura de Software" />
+    <meta property="og:description" content="Sistema demonstrativo de conceitos de arquitetura usando Docker" />
+    <meta property="og:type" content="website" />
+    
+    <!-- PWA tags -->
+    <link rel="apple-touch-icon" href="%PUBLIC_URL%/logo192.png" />
+    <link rel="manifest" href="%PUBLIC_URL%/manifest.json" />
+  </head>
+  <body>
+    <noscript>
+      <div style="padding: 2rem; text-align: center; background: #f8f9fa;">
+        <h2>JavaScript Necessário</h2>
+        <p>Você precisa habilitar JavaScript para executar esta aplicação.</p>
+      </div>
+    </noscript>
+    
+    <div id="root"></div>
+    
+    <!-- Loading inicial -->
+    <script>
+      // Mostrar loading enquanto React carrega
+      if (!window.React) {
+        document.getElementById('root').innerHTML = `
+          <div style="
+            display: flex; 
+            justify-content: center; 
+            align-items: center; 
+            height: 100vh; 
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            color: #667eea;
+            font-size: 1.2rem;
+          ">
+            Carregando Blog System...
+          </div>
+        `;
+      }
+    </script>
+  </body>
+</html>
