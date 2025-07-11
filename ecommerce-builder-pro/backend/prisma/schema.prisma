@@ -1,0 +1,144 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  password  String
+  name      String
+  plan      Plan     @default(BASIC)
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  stores    Store[]
+  
+  @@map("users")
+}
+
+model Store {
+  id          String      @id @default(cuid())
+  name        String
+  domain      String      @unique
+  subdomain   String      @unique
+  status      StoreStatus @default(CREATING)
+  templateId  String
+  serverId    String?
+  serverIP    String?
+  userId      String
+  config      Json?
+  
+  user        User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  template    Template    @relation(fields: [templateId], references: [id])
+  
+  deployments Deployment[]
+  integrations Integration[]
+  analytics   Analytics[]
+  
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+  
+  @@map("stores")
+}
+
+model Template {
+  id          String @id @default(cuid())
+  name        String
+  category    String
+  description String?
+  thumbnail   String
+  files       Json
+  config      Json
+  isActive    Boolean @default(true)
+  
+  stores      Store[]
+  
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  @@map("templates")
+}
+
+model Deployment {
+  id         String           @id @default(cuid())
+  storeId    String
+  status     DeploymentStatus @default(PENDING)
+  progress   Int              @default(0)
+  logs       Json[]
+  error      String?
+  startedAt  DateTime         @default(now())
+  finishedAt DateTime?
+  
+  store      Store            @relation(fields: [storeId], references: [id], onDelete: Cascade)
+  
+  @@map("deployments")
+}
+
+model Integration {
+  id      String          @id @default(cuid())
+  storeId String
+  type    IntegrationType
+  config  Json
+  active  Boolean         @default(true)
+  
+  store   Store           @relation(fields: [storeId], references: [id], onDelete: Cascade)
+  
+  createdAt DateTime      @default(now())
+  updatedAt DateTime      @updatedAt
+  
+  @@unique([storeId, type])
+  @@map("integrations")
+}
+
+model Analytics {
+  id          String   @id @default(cuid())
+  storeId     String
+  date        DateTime @db.Date
+  visits      Int      @default(0)
+  sales       Decimal  @default(0) @db.Decimal(10,2)
+  orders      Int      @default(0)
+  conversion  Decimal  @default(0) @db.Decimal(5,4)
+  
+  store       Store    @relation(fields: [storeId], references: [id], onDelete: Cascade)
+  
+  @@unique([storeId, date])
+  @@map("analytics")
+}
+
+enum Plan {
+  BASIC
+  PRO
+  ENTERPRISE
+}
+
+enum StoreStatus {
+  CREATING
+  ACTIVE
+  SUSPENDED
+  DELETED
+  ERROR
+}
+
+enum DeploymentStatus {
+  PENDING
+  RUNNING
+  COMPLETED
+  FAILED
+}
+
+enum IntegrationType {
+  PAGSEGURO
+  MERCADOPAGO
+  PICPAY
+  CORREIOS
+  JADLOG
+  GOOGLE_ANALYTICS
+  FACEBOOK_PIXEL
+  WHATSAPP
+}
